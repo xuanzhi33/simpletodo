@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<!--Made with ❤ by XUANZHI-->
+<!--该页面已接入百度统计-->
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="theme-color" content="#e9f1e9">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>简单清单</title>
+    <!-- Bootstrap -->
+    <link href="./bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./css/font-awesome.min.css">
+    <style>
+        body {
+            background: #e9f1e9;
+        }
+
+        a,
+        a:hover {
+            color: #296324;
+            text-decoration: none;
+        }
+
+        .navbar {
+            background: #e9f1e9;
+        }
+
+        .glass {
+            border: 2px solid #296324;
+            line-height: 2;
+            border-radius: 0px;
+        }
+
+        .btn,
+        .form-control,
+        .input-group-text,
+        .badge,
+        .alert {
+            border-radius: 0px;
+        }
+    </style>
+    <style>
+        .event {
+            font-size: 18px;
+        }
+
+        .listTitle {
+            font-size: 35px;
+            outline: none;
+            border: none;
+            width: 100%;
+            color: #212529;
+        }
+
+        .eventName {
+            outline: none;
+            border: none;
+            color: #212529;
+        }
+
+        .eventNameUnfinished {
+            width: 90%;
+        }
+
+        .eventNameFinished {
+            width: 70%;
+        }
+    </style>
+    <link rel="icon" href="../favicon.ico">
+    <script>
+        var _hmt = _hmt || [];
+        (function () {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm.js?76d748872de14bad7ef88266420d87e4";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+</head>
+
+<body>
+    <br class="brBefore">
+    <br class="brBefore">
+    <div class="container">
+        <div class="card glass"> <br>
+            <div class="container">
+                <h1 class="text-center" id="h">简单清单</h1><br>
+                <div id="p">
+                    <button class="btn btn-success btn-block" id="newListBtn"><i class="fa fa-plus"
+                            aria-hidden="true"></i> 新建清单</button>
+
+                </div>
+            </div>
+            <br>
+        </div>
+        <div id="lists">
+        </div>
+    </div>
+    <br>
+    <br>
+    <script>
+        function getCookie(cname) {
+            var name = cname + "=";
+            var ca = document.cookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i].trim();
+                if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
+            }
+            return "";
+        }
+        function delCookie(name) {
+            document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        }
+        function user_welcome() {
+            if (getCookie("x_user")) {
+                document.getElementById("welcome_msg").innerHTML = decodeURI(getCookie("x_user")) + "，欢迎您！&nbsp;&nbsp;<a href='http://xuanzhi33.top/logout.html'>退出登录</a>"
+            } else {
+                document.getElementById("welcome_msg").innerHTML = "游客，您好！&nbsp;&nbsp;您可以<a href='http://xuanzhi33.top/login/signup.html'>注册</a>或<a href='http://xuanzhi33.top/login/'>登录</a>"
+            }
+        }
+        function GetUrlByParamName(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            var URL = decodeURI(window.location.search);
+            var r = URL.substr(1).match(reg);
+            if (r != null) {
+                //decodeURI() 函数可对 encodeURI() 函数编码过的 URI 进行解码  
+                return decodeURI(r[2]);
+            };
+            return null;
+        }
+
+
+    </script>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="./jquery.min.js"></script>
+
+    <script>
+        var lists = [];
+
+        if (!localStorage.todolists) {
+            localStorage.todolists = `[
+                {"title":"第一张清单","content":[
+                    {"name":"在这里填写项目~","finished":false},
+                    {"name":"项目会自动保存哦","finished":false},
+                    {"name":"我是项目3","finished":false},
+                    {"name":"我是项目4","finished":false},
+                    {"name":"使用键盘上换行键快速新建项目","finished":false},
+                    {"name":"←点击左侧序号表示完成该项目","finished":false},
+                    {"name":"已完成的项目会被折叠","finished":true},
+                    {"name":"↓点击下方按钮展开已完成的项目","finished":false},
+                    {"name":"点击右侧按钮删除这条项目","finished":true},
+                    {"name":"“清空已完成”按钮可以","finished":true},
+                    {"name":"——清空已完成的项目","finished":true},
+                    {"name":"“删除清单”按钮可以","finished":true},
+                    {"name":"——删除整个清单","finished":true}
+                ]},
+                {"title":"","content":[
+                    {"name":"","finished":false}
+                ]}
+            ]`;
+        }
+
+        lists = JSON.parse(localStorage.todolists);
+        showLists();
+
+
+        function saveLists() {
+            localStorage.todolists = JSON.stringify(lists);
+        }
+
+        function showLists() {
+            var html = "";
+            for (var i = 0; i < lists.length; i++) {
+                html += `
+                 <div class="card glass mt-3 list"> <br>
+                     <div class="container">
+                       <input placeholder="在此填写清单标题..." class="text-center listTitle" contenteditable value="${lists[i].title}"></input>
+                     `;
+                var htmlUnfinished = "";
+                var htmlFinished = `
+                <div class="finishedEvent" style="display:none;">
+                `;
+                var idUnfinished = 0;
+                var finishedNum = 0;
+                for (var j = 0; j < lists[i].content.length; j++) {
+                    if (!lists[i].content[j].finished) {
+                        htmlUnfinished += `
+                         <div class="event">
+                        <span class="badge badge-secondary" onclick="finishEvent(${i},${j})">${++idUnfinished}</span>
+                        <input placeholder="填写内容..." class="eventName eventNameUnfinished" eventid="${j}" contenteditable value="${lists[i].content[j].name}"></input>
+                         </div>
+                    `;
+                    } else {
+                        finishedNum++;
+                        htmlFinished += `
+                         <div class="event">
+                        <span class="badge badge-success" onclick="unfinishEvent(${i},${j})"><i class="fa fa-check" aria-hidden="true"></i></span>
+                        <input placeholder="填写内容..." class="eventName eventNameFinished" eventid="${j}" contenteditable value="${lists[i].content[j].name}"></input>
+                        <span class="badge badge-secondary" onclick="delEvent(${i},${j})"><i class="fa fa-trash" aria-hidden="true"></i> 删除</span>
+                        </div>
+                         `;
+                    }
+
+                }
+                html += htmlUnfinished;
+                html += htmlFinished;
+                html += `</div>`
+                if (finishedNum > 0) {
+                    html += `
+                   <div class="btn-group mt-2 w-100">
+                      <button class="btn btn-light showFinishedBtn" onclick="showFinished(${i},${finishedNum})"><i class="fa fa-eye" aria-hidden="true"></i> ${finishedNum}个项目已完成</button>
+                      <button class="btn btn-light" onclick="clearFinished(${i})"><i class="fa fa-trash" aria-hidden="true"></i> 清空已完成</button>
+                   </div>
+                   `
+                }
+                html += `
+                <div class="btn-group mt-2 w-100">
+                <button class="btn btn-light" onclick="newContent(${i})"><i class="fa fa-plus" aria-hidden="true"></i> 新建项目</button>
+                <button class="btn btn-light delBtn" onclick="deleteList(${i})"><i class="fa fa-times" aria-hidden="true"></i> 删除清单</button>
+                </div>
+              </div>
+              <br>
+            </div> 
+            `
+            }
+            $("#lists").html(html);
+            bindEvents();
+        }
+        function createList() {
+
+            lists.push({ "title": "", "content": [{ "name": "", "finished": false }] })
+            saveLists();
+            showLists();
+        }
+        function deleteList(id) {
+            $(".list").eq(id).find(".delBtn")
+                .removeClass("btn-light").addClass("btn-danger").attr("onclick", `confirmDel(${id})`).html("确认删除")
+                .after(`<button class="btn btn-secondary cancelDelBtn" onclick="cancelDel(${id})">取消删除</button>`)
+
+        }
+        function confirmDel(id) {
+            $(".list").eq(id).find(".delBtn").html("正在删除").attr("onclick", "");
+            $(".list").eq(id).find(".cancelDelBtn").remove();
+
+            lists.splice(id, 1);
+            saveLists();
+            $(".list").eq(id).fadeOut("", function () {
+                showLists();
+            })
+        }
+        function cancelDel(id) {
+            $(".list").eq(id).find(".delBtn")
+                .removeClass("btn-danger").addClass("btn-light").attr("onclick", `deleteList(${id})`).html("删除清单")
+            $(".list").eq(id).find(".cancelDelBtn").remove();
+        }
+        function newContent(id) {
+            lists[id].content.push({ "name": "", "finished": false });
+            saveLists();
+            showLists();
+            $(".list").eq(id).find(".eventNameUnfinished").last().focus();
+        }
+        function newContentByEnter(id1, id2) {
+            lists[id1].content.splice(Number(id2) + 1, 0, { "name": "", "finished": false });
+            saveLists();
+            showLists();
+            $(".list").eq(id1).find(`.eventName[eventid=${Number(id2) + 1}]`).focus();
+        }
+        function finishEvent(id1, id2) {
+            lists[id1].content[id2].finished = true;
+            saveLists();
+            showLists();
+        }
+        function unfinishEvent(id1, id2) {
+            lists[id1].content[id2].finished = false;
+            saveLists();
+            showLists();
+        }
+        function showFinished(id, num) {
+            $(".finishedEvent").eq(id).slideDown();
+            $(".showFinishedBtn").eq(id).html(`<i class="fa fa-eye-slash" aria-hidden="true"></i> ${num}个项目已完成`)
+                .attr("onclick", `hideFinished(${id},${num})`);
+        }
+        function hideFinished(id, num) {
+            $(".finishedEvent").eq(id).slideUp();
+            $(".showFinishedBtn").eq(id).html(`<i class="fa fa-eye" aria-hidden="true"></i> ${num}个项目已完成`)
+                .attr("onclick", `showFinished(${id},${num})`);
+        }
+        function clearFinished(id) {
+            for (var j = 0; j < lists[id].content.length;) {
+                if (lists[id].content[j].finished) {
+                    lists[id].content.splice(j, 1);
+                } else {
+                    j++;
+                }
+            }
+            saveLists();
+            showLists();
+        }
+        function delEvent(id1, id2) {
+            lists[id1].content.splice(id2, 1);
+            saveLists();
+            showLists();
+        }
+        function delEventByBackspace(id1, id2) {
+            lists[id1].content.splice(Number(id2), 1);
+            saveLists();
+            showLists();
+            $(".list").eq(id1).find(`.eventName[eventid=${Number(id2) - 1}]`).focus();
+        }
+        function bindEvents() {
+            $(".listTitle").each(function (id) {
+                $(this).keyup(function () {
+                    lists[id].title = $(this).val();
+                    saveLists();
+                })
+            }
+            )
+
+            $(".list").each(function (id) {
+                $(this).find(".eventName").keyup(function (event) {
+                    if (event.keyCode != 13) {
+                        if (event.keyCode == 8 && $(this).val() == "") {
+                            delEventByBackspace(id, $(this).attr("eventid"));
+                        } else {
+                            lists[id].content[Number($(this).attr("eventid"))].name = $(this).val();
+                            saveLists();
+                        }
+                    } else {
+                        newContentByEnter(id, $(this).attr("eventid"));
+                    }
+                })
+            }
+            )
+        }
+        $("#newListBtn").click(createList);
+    </script>
+</body>
+
+</html>
