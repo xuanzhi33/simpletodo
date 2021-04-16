@@ -33,6 +33,62 @@
             border-radius: 0px;
         }
 
+        .darkMode {
+            display: none;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .darkMode {
+                display: inline;
+            }
+
+            img[src="./logo.png"] {
+                display: none;
+            }
+
+            body {
+                background: #202420;
+            }
+
+            .navbar {
+                background: #202420;
+            }
+
+            .navbar-brand,
+            .nav-link,
+            table,
+            .btn[disabled] {
+                color: white !important;
+            }
+
+            .form-control,
+            .form-control:focus {
+                color: white;
+                background: #202420;
+            }
+
+            .table-success,
+            .table-success>td,
+            .table-success>th {
+                background: #202420;
+            }
+
+            a,
+            a:hover {
+                color: #95ad95;
+                text-decoration: none;
+            }
+
+            .glass {
+                border: 2px solid #95ad95;
+                background: black;
+                color: white;
+                line-height: 2;
+                border-radius: 0px;
+            }
+
+        }
+
         .btn,
         .form-control,
         .input-group-text,
@@ -40,8 +96,8 @@
         .alert {
             border-radius: 0px;
         }
-    </style>
-    <style>
+
+
         .event {
             font-size: 18px;
         }
@@ -67,6 +123,15 @@
         .eventNameFinished {
             width: 70%;
         }
+
+        @media (prefers-color-scheme: dark) {
+
+            .listTitle,
+            .eventName {
+                background: black;
+                color: white;
+            }
+        }
     </style>
     <link rel="icon" href="../favicon.ico">
     <script>
@@ -86,12 +151,10 @@
     <div class="container">
         <div class="card glass"> <br>
             <div class="container">
-                <h1 class="text-center" id="h">简单清单</h1><br>
-                <div id="p">
-                    <button class="btn btn-success btn-block" id="newListBtn"><i class="fa fa-plus"
-                            aria-hidden="true"></i> 新建清单</button>
-
-                </div>
+                <h1 class="text-center" id="h">简单清单</h1>
+                <p class="text-center">版本：2.1，by xuanzhi33</p>
+                <button class="btn btn-success btn-block" id="newListBtn"><i class="fa fa-plus" aria-hidden="true"></i>
+                    新建清单</button>
             </div>
             <br>
         </div>
@@ -252,7 +315,7 @@
         }
         function cancelDel(id) {
             $(".list").eq(id).find(".delBtn")
-                .removeClass("btn-danger").addClass("btn-light").attr("onclick", `deleteList(${id})`).html("删除清单")
+                .removeClass("btn-danger").addClass("btn-light").attr("onclick", `deleteList(${id})`).html(`<i class="fa fa-times" aria-hidden="true"></i> 删除清单`)
             $(".list").eq(id).find(".cancelDelBtn").remove();
         }
         function newContent(id) {
@@ -278,13 +341,13 @@
             showLists();
         }
         function showFinished(id, num) {
-            $(".finishedEvent").eq(id).slideDown();
-            $(".showFinishedBtn").eq(id).html(`<i class="fa fa-eye-slash" aria-hidden="true"></i> ${num}个项目已完成`)
+            $(".list").eq(id).find(".finishedEvent").slideDown();
+            $(".list").eq(id).find(".showFinishedBtn").html(`<i class="fa fa-eye-slash" aria-hidden="true"></i> ${num}个项目已完成`)
                 .attr("onclick", `hideFinished(${id},${num})`);
         }
         function hideFinished(id, num) {
-            $(".finishedEvent").eq(id).slideUp();
-            $(".showFinishedBtn").eq(id).html(`<i class="fa fa-eye" aria-hidden="true"></i> ${num}个项目已完成`)
+            $(".list").eq(id).find(".finishedEvent").slideUp();
+            $(".list").eq(id).find(".showFinishedBtn").html(`<i class="fa fa-eye" aria-hidden="true"></i> ${num}个项目已完成`)
                 .attr("onclick", `showFinished(${id},${num})`);
         }
         function clearFinished(id) {
@@ -311,9 +374,13 @@
         }
         function bindEvents() {
             $(".listTitle").each(function (id) {
-                $(this).keyup(function () {
-                    lists[id].title = $(this).val();
-                    saveLists();
+                $(this).keyup(function (event) {
+                    if (event.keyCode != 13) {
+                        lists[id].title = $(this).val();
+                        saveLists();
+                    } else {
+                        $(".list").eq(id).find(".eventName").first().focus();
+                    }
                 })
             }
             )
